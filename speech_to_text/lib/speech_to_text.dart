@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text_platform_interface/speech_to_text_platform_interface.dart';
+
 export 'package:speech_to_text_platform_interface/speech_to_text_platform_interface.dart'
     show ListenMode, SpeechConfigOption, SpeechListenOptions;
 
@@ -655,9 +656,9 @@ class SpeechToText {
   }
 
   Future<void> _onNotifyError(String errorJson) async {
-    if (isNotListening && _userEnded) {
-      return;
-    }
+    // if (isNotListening && _userEnded) {
+    //   return;
+    // }
     Map<String, dynamic> errorMap = jsonDecode(errorJson);
     var speechError = SpeechRecognitionError.fromJson(errorMap);
     _lastError = speechError;
