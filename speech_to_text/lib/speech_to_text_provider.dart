@@ -5,6 +5,7 @@ import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_event.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:speech_to_text_platform_interface/speech_to_text_platform_interface.dart';
 
 /// Simplifies interaction with [SpeechToText] by handling all the callbacks and notifying
 /// listeners as events happen.
@@ -136,14 +137,16 @@ class SpeechToTextProvider extends ChangeNotifier {
       Duration? listenFor,
       Duration? pauseFor,
       String? localeId,
-      ListenMode listenMode = ListenMode.confirmation}) {
+      ListenMode listenMode = ListenMode.confirmation,
+      LanguageModel languageModel = LanguageModel.freeForm}) {
     _lastLevel = 0;
     _lastResult = null;
     final options = SpeechListenOptions(
         partialResults: partialResults,
         onDevice: onDevice,
         cancelOnError: true,
-        listenMode: listenMode);
+        listenMode: listenMode,
+        languageModel: languageModel);
     if (soundLevel) {
       _speechToText.listen(
           listenFor: listenFor,

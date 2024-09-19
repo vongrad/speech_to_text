@@ -50,6 +50,26 @@ enum ListenMode {
   confirmation,
 }
 
+/// The language model to use for speech recognition.
+///
+/// Currently only supported on **Android**.
+///
+/// See also:
+/// * https://developer.android.com/reference/android/speech/RecognizerIntent#EXTRA_LANGUAGE_MODEL
+enum LanguageModel {
+  /// Use a language model based on free-form speech recognition
+  /// Use this when you are using speech recognition to transcribe spoken language.
+  freeForm("free_form"),
+
+  /// Use a language model based on web search terms
+  /// Use this when you are using speech recognition to identify search terms.
+  webSearch("web_search");
+
+  final String value;
+
+  const LanguageModel(this.value);
+}
+
 /// Options for the [listen] method. Previously options were provided as
 /// separate parameters to listen however as the number of options grew
 /// this became unwieldy. The options are now provided as a single object
@@ -63,6 +83,7 @@ class SpeechListenOptions {
   final sampleRate;
   final autoPunctuation;
   final enableHapticFeedback;
+  final LanguageModel languageModel;
 
   SpeechListenOptions(
       {
@@ -95,7 +116,10 @@ class SpeechListenOptions {
       /// If true haptic feedback will be enabled during the listen session.
       /// Usually haptics are suppressed during speech recognition to avoid
       /// interference with the microphone. Currently only supported on iOS.
-      this.enableHapticFeedback = false});
+      this.enableHapticFeedback = false,
+
+      /// The language model to use, currently only supported on Android.
+      this.languageModel = LanguageModel.freeForm});
 }
 
 /// The interface that implementations of url_launcher must implement.

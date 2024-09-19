@@ -111,6 +111,8 @@ class MethodChannelSpeechToText extends SpeechToTextPlatform {
       "sampleRate": options?.sampleRate ?? sampleRate,
       "enableHaptics": options?.enableHapticFeedback ?? false,
       "autoPunctuation": options?.autoPunctuation ?? false,
+      "languageModel":
+          options?.languageModel.value ?? LanguageModel.freeForm.value,
     };
     if (null != localeId) {
       listenParams["localeId"] = localeId;
