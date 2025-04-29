@@ -109,8 +109,12 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin {
       channel = FlutterMethodChannel(
         name: "plugin.csdcorp.com/speech_to_text", binaryMessenger: registrar.messenger)
     #else
+      // ADAM: Original implementation seems to run on UI thread, making it freeze for 200-300ms
+      let taskQueue = registrar.messenger().makeBackgroundTaskQueue?()
       channel = FlutterMethodChannel(
-        name: "plugin.csdcorp.com/speech_to_text", binaryMessenger: registrar.messenger())
+        name: "plugin.csdcorp.com/speech_to_text", binaryMessenger: registrar.messenger(),
+        codec: FlutterStandardMethodCodec.sharedInstance(), taskQueue: taskQueue
+      )
 
     #endif
 
@@ -408,8 +412,9 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin {
         if let rememberedAudioCategory = rememberedAudioCategory,
           let rememberedAudioCategoryOptions = rememberedAudioCategoryOptions
         {
-          try self.audioSession.setCategory(
-            rememberedAudioCategory, options: rememberedAudioCategoryOptions)
+          // ADAM: This seems to be really slow, we will set .playAndRecord once during the app start-up
+          // try self.audioSession.setCategory(
+          //  rememberedAudioCategory, options: rememberedAudioCategoryOptions)
         }
       } catch {
         os_log(
@@ -417,7 +422,8 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin {
           error.localizedDescription)
       }
       do {
-        try self.audioSession.setActive(false, options: .notifyOthersOnDeactivation)
+        // ADAM: This deactivates the session after each speech recognition, making subsequent calls slow
+        // try self.audioSession.setActive(false, options: .notifyOthersOnDeactivation)
       } catch {
         os_log(
           "Error deactivation: %{PUBLIC}@", log: pluginLog, type: .info, error.localizedDescription)
@@ -470,9 +476,10 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin {
       #if os(iOS)
         rememberedAudioCategory = self.audioSession.category
         rememberedAudioCategoryOptions = self.audioSession.categoryOptions
-        try self.audioSession.setCategory(
-          AVAudioSession.Category.playAndRecord,
-          options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP, .mixWithOthers])
+        // ADAM: This seems to be really slow, we will set .playAndRecord once during the app start-up
+        // try self.audioSession.setCategory(
+        //  AVAudioSession.Category.playAndRecord,
+        //  options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP, .mixWithOthers])
         //            try self.audioSession.setMode(AVAudioSession.Mode.measurement)
         if sampleRate > 0 {
           try self.audioSession.setPreferredSampleRate(Double(sampleRate))
