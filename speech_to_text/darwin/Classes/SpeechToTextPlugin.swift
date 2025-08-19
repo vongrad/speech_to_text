@@ -484,7 +484,9 @@ public class SpeechToTextPlugin: NSObject, FlutterPlugin {
         if sampleRate > 0 {
           try self.audioSession.setPreferredSampleRate(Double(sampleRate))
         }
-        try self.audioSession.setMode(AVAudioSession.Mode.default)
+        // ADAM: This seems to break bluetooth audio where the subsequent playback is played from
+        // speaker instead of headphones if applicable
+        // try self.audioSession.setMode(AVAudioSession.Mode.default)
         try self.audioSession.setActive(true, options: .notifyOthersOnDeactivation)
         if #available(iOS 13.0, *) {
           try self.audioSession.setAllowHapticsAndSystemSoundsDuringRecording(enableHaptics)
